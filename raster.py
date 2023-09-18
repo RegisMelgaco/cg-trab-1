@@ -12,21 +12,30 @@ class Coordinate:
     return f'({self.x}, {self.y})'
   
   def __add__(self, other):
-    return Coordinate(self.x + other.x, self.y + other.y)
+    if isinstance(other, Coordinate):
+      return Coordinate(self.x + other.x, self.y + other.y)
+
+    return Coordinate(self.x + other, self.y + other)
   
   def __sub__(self, other):
     return Coordinate(self.x - other.x, self.y - other.y)
   
   def __mul__(self, other):
-    return Coordinate(round(self.x * other), round(self.y * other))
+    if isinstance(other, Coordinate):
+      return Coordinate(self.x * other.x, self.y * other.y)
+
+    return Coordinate(math.floor(self.x * other), math.floor(self.y * other))
   
   def __repr__(self) -> str:
     return f'({self.x}, {self.y})'
   
-  def to_canvas_coordinate_system(self, canvas: np.array):
+  def to_canvas_coordinate_system(self, canvas: np.matrix):
     shape = canvas.shape
 
-    return Coordinate(round(self.x * shape[0]), round(self.y * shape[1]))
+    c = Coordinate((self.x / 2) + 0.5, (self.y / 2) + 0.5)
+    c = Coordinate(c.x-1, math.floor(c.y * shape[1]))
+
+    return c
 
 
 class Line:
@@ -101,33 +110,40 @@ class Geometry:
 
 
 if __name__ == "__main__":
-  canvas1 = np.zeros((11, 11))
-  canvas2 = np.zeros((21, 21))
-  canvas3 = np.zeros((51, 51))
+  canvas1 = np.zeros((10, 10))
+  canvas2 = np.zeros((20, 20))
+  canvas3 = np.zeros((50, 50))
 
-  l1 = Line(Coordinate(.2, .2), Coordinate(.7, .8))
-  l2 = Line(Coordinate(.2, .2), Coordinate(.8, .7))
-  l3 = Line(Coordinate(.2, .2), Coordinate(.8, .4))
-  l4 = Line(Coordinate(.2, .2), Coordinate(.4, .8))
-  l5 = Line(Coordinate(.2, .2), Coordinate(.0, .0))
+  for i in range(8):
+    i /= 4
+    l = Line(Coordinate(0,0) ,Coordinate(math.sin(math.pi * i), math.cos(math.pi * i)))
+    l.draw(canvas1)
+    l.draw(canvas2)
+    l.draw(canvas3)
 
-  l1.draw(canvas1)
-  l2.draw(canvas1)
-  l3.draw(canvas1)
-  l4.draw(canvas1)
-  l5.draw(canvas1)
+  # l1 = Line(Coordinate(-.8, -.8), Coordinate(.7, .8))
+  # l2 = Line(Coordinate(-.8, -.8), Coordinate(.8, .7))
+  # l3 = Line(Coordinate(-.8, -.8), Coordinate(.8, .4))
+  # l4 = Line(Coordinate(-.8, -.8), Coordinate(.4, .8))
+  # l5 = Line(Coordinate(-.8, -.8), Coordinate(.0, .0))
 
-  l1.draw(canvas2)
-  l2.draw(canvas2)
-  l3.draw(canvas2)
-  l4.draw(canvas2)
-  l5.draw(canvas2)
+  # l1.draw(canvas1)
+  # l2.draw(canvas1)
+  # l3.draw(canvas1)
+  # l4.draw(canvas1)
+  # l5.draw(canvas1)
 
-  l1.draw(canvas3)
-  l2.draw(canvas3)
-  l3.draw(canvas3)
-  l4.draw(canvas3)
-  l5.draw(canvas3)
+  # l1.draw(canvas2)
+  # l2.draw(canvas2)
+  # l3.draw(canvas2)
+  # l4.draw(canvas2)
+  # l5.draw(canvas2)
+
+  # l1.draw(canvas3)
+  # l2.draw(canvas3)
+  # l3.draw(canvas3)
+  # l4.draw(canvas3)
+  # l5.draw(canvas3)
 
   plt.matshow(canvas1)
   plt.show()
