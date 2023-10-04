@@ -5,66 +5,75 @@ import math
 
 class Coordinate:
   def __init__(self, x, y):
-    self.x = x
-    self.y = y
+    self.x = round(x, 4)
+    self.y = round(y, 4)
 
   def __str__(self):
     return f'({self.x}, {self.y})'
-  
+
   def __add__(self, other):
     if isinstance(other, Coordinate):
-      return Coordinate(self.x + other.x, self.y + other.y)
+      return Coordinate((self.x + other.x), (self.y + other.y))
 
-    return Coordinate(self.x + other, self.y + other)
-  
-  def __sub__(self, other):
-    return Coordinate(self.x - other.x, self.y - other.y)
-  
+    return Coordinate((self.x + other), (self.y + other))
+
   def __mul__(self, other):
     if isinstance(other, Coordinate):
-      return Coordinate(self.x * other.x, self.y * other.y)
+      return Coordinate((self.x * other.x), (self.y * other.y))
 
-    return Coordinate(math.floor(self.x * other), math.floor(self.y * other))
-  
+    return Coordinate((self.x * other), (self.y * other))
+
   def __repr__(self) -> str:
     return f'({self.x}, {self.y})'
-  
+
   def to_canvas_coordinate_system(self, canvas: np.matrix):
     shape = canvas.shape
 
     c = Coordinate((self.x / 2) + 0.5, (self.y / 2) + 0.5)
-    c = Coordinate(c.x-1, math.floor(c.y * shape[1]))
+    c = Coordinate(round(c.x * shape[0]), round(c.y * shape[1]))
+
+    if c.x >= shape[0]:
+      c.x = shape[0]-1
+
+    if c.y >= shape[1]:
+      c.y = shape[1]-1
 
     return c
 
 
 class Line:
-  def __init__(self, c1: Coordinate, c2: Coordinate):
-    self.c1 = c1
-    self.c2 = c2
+  def __init__(self, p1: Coordinate, p2: Coordinate):
+    self.p1 = p1
+    self.p2 = p2
 
   def __str__(self):
-    return f'[{self.c1}, {self.c2}]'
-  
+    return f'[{self.p1}, {self.p2}]'
+
   def __t_range(self, step):
     t = 0
     while t < 1:
       yield t
       t += step
 
+  def dim_length(self, canvas):
+    delta = (self.p1 + (self.p2 * -1))
+    return abs(delta.x) if abs(delta.x) > abs(delta.y) else abs(delta.y)
+
   def draw(self, canvas: np.matrix):
-    c1 = self.c1.to_canvas_coordinate_system(canvas)
-    c2 = self.c2.to_canvas_coordinate_system(canvas)
-    delta = c1 - c2
+    p1 = self.p1.to_canvas_coordinate_system(canvas)
+    p2 = self.p2.to_canvas_coordinate_system(canvas)
+    delta = p1 + (p2 * -1)
     line_side = abs(delta.x) if abs(delta.x) > abs(delta.y) else abs(delta.y)
+    if line_side == 0:
+      return
+
     step = line_side ** -1
-    
-    dots = [c1 - (delta * t) for t in self.__t_range(step)]
+
+    dots = [p1 + (delta * t * -1) for t in self.__t_range(step)]
     for d in dots:
-      canvas[d.x][d.y] = 1
+      canvas[round(d.y)][round(d.x)] = 1
 
     return dots
-
 
 
 class Geometry:
@@ -107,7 +116,6 @@ class Geometry:
       canvas[c.x][c.y] = 1
 
     return coordinates
-
 
 if __name__ == "__main__":
   canvas1 = np.zeros((10, 10))
