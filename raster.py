@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+
 
 class Coordinate:
   def __init__(self, x, y):
@@ -74,8 +78,7 @@ class Line:
       canvas[round(d.y)][round(d.x)] = 1
 
     return dots
-
-
+  
 class Geometry:
   def __init__(self, *lines):
     if len(lines) < 3:
@@ -116,46 +119,68 @@ class Geometry:
       canvas[c.x][c.y] = 1
 
     return coordinates
+  
+h_matrix = np.matrix([
+    [ 2, -2,  1,  1],
+    [-3,  3, -2, -1],
+    [ 0,  0,  1,  0],
+    [ 1,  0,  0,  0]
+])
+
+class Curve:
+  def __init__(self, p1: Coordinate, p2: Coordinate, t1: Coordinate, t2: Coordinate):
+    self.p1 = p1
+    self.p2 = p2
+    self.t1 = t1
+    self.t2 = t2
+    self.matrix = np.matrix([
+        [p1.x ,p1.y, 0],
+        [p2.x ,p2.y, 0],
+        [t1.x ,t1.y, 0],
+        [t2.x ,t2.y, 0],
+    ])
+
+  def __str__(self):
+    return f'Curve(p1: {self.p1}, p2: {self.p2}, t1: {self.t1}, t2: {self.t2})'
+
+  def draw(self, canvas: np.matrix, resolution = 15):
+    resolution += 1
+    step = resolution ** -1
+    steps = [step * i for i in range(1, resolution)]
+    print(len(steps), steps)
+
+    ps = [(np.matrix([t**3, t**2, t, 1]) * h_matrix * self.matrix).tolist() for t in steps]
+
+    ps = [Coordinate(p[0][0], p[0][1]) for p in ps]
+    ps.insert(0, self.p1)
+    ps.append(self.p2)
+
+    lines = [Line(ps[i], ps[i+1]) for i in range(len(ps) - 1)]
+
+    for l in lines:
+      l.draw(canvas)
+
+
+def create_graph(name, canvas_size, coordinates, lines):
+  canvas = np.zeros(canvas_size)
+  lines = [Line(coordinates[l[0]], coordinates[l[1]]) for l in lines]
+
+  for l in lines:
+    l.draw(canvas)
+
+  plt.matshow(canvas)
+  plt.savefig(f'plots/{name}.png')
+
+
 
 if __name__ == "__main__":
-  canvas1 = np.zeros((10, 10))
-  canvas2 = np.zeros((20, 20))
-  canvas3 = np.zeros((50, 50))
+  coordinates = {
+    "1": Coordinate(0, 0),
+    "2": Coordinate(1, 0),
+    "3": Coordinate(0, 1),
+    "4": Coordinate(1, 1),
+  }
 
-  for i in range(8):
-    i /= 4
-    l = Line(Coordinate(0,0) ,Coordinate(math.sin(math.pi * i), math.cos(math.pi * i)))
-    l.draw(canvas1)
-    l.draw(canvas2)
-    l.draw(canvas3)
+  lines = [["2", "3"], ["1", "4"]]
 
-  # l1 = Line(Coordinate(-.8, -.8), Coordinate(.7, .8))
-  # l2 = Line(Coordinate(-.8, -.8), Coordinate(.8, .7))
-  # l3 = Line(Coordinate(-.8, -.8), Coordinate(.8, .4))
-  # l4 = Line(Coordinate(-.8, -.8), Coordinate(.4, .8))
-  # l5 = Line(Coordinate(-.8, -.8), Coordinate(.0, .0))
-
-  # l1.draw(canvas1)
-  # l2.draw(canvas1)
-  # l3.draw(canvas1)
-  # l4.draw(canvas1)
-  # l5.draw(canvas1)
-
-  # l1.draw(canvas2)
-  # l2.draw(canvas2)
-  # l3.draw(canvas2)
-  # l4.draw(canvas2)
-  # l5.draw(canvas2)
-
-  # l1.draw(canvas3)
-  # l2.draw(canvas3)
-  # l3.draw(canvas3)
-  # l4.draw(canvas3)
-  # l5.draw(canvas3)
-
-  plt.matshow(canvas1)
-  plt.show()
-  plt.matshow(canvas2)
-  plt.show()
-  plt.matshow(canvas3)
-  plt.show()
+  create_graph("testinho", (100, 100), coordinates, lines)
