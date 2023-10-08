@@ -14,7 +14,7 @@
   let horizontalRes = 100;
 
   async function updatePlots() {
-    const resp = await fetch("http://127.0.0.1:5000/plots");
+    const resp = await fetch("/plots");
     const body = await resp.json();
     plots = body.plots;
   }
@@ -110,7 +110,7 @@
       edges,
     });
 
-    await fetch("http://127.0.0.1:5000/raster", {
+    await fetch("/raster", {
       method: "POST",
       headers: {
         "Content-type": "application/json",

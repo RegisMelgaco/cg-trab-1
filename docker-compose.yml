@@ -1,12 +1,13 @@
 version: "3.9"
 services:
-  nginx:
-    image: nginx:1.25
+  api:
+    build: "."
+    volumes:
+      - "./plots:/src/plots:rw"
+
+  web:
+    build: web
     ports:
       - 8080:8080
     volumes:
       - "./plots:/app/static/plots:ro"
-      - "./nginx.conf:/etc/nginx/nginx.conf:ro"
-
-  api:
-    build: "."
