@@ -9,8 +9,8 @@ import math
 
 class Coordinate:
   def __init__(self, x, y):
-    self.x = round(x, 4)
-    self.y = round(y, 4)
+    self.x = x
+    self.y = y
 
   def __str__(self):
     return f'({self.x}, {self.y})'
@@ -80,7 +80,8 @@ class Line:
     return dots
   
 class Geometry:
-  def __init__(self, *lines):
+  def __init__(self, lines):
+    print(lines)
     if len(lines) < 3:
       raise Exception("é obigatório possuir 3 linhas ou mais")
     self.lines = lines
@@ -144,10 +145,8 @@ class Curve:
     return f'Curve(p1: {self.p1}, p2: {self.p2}, t1: {self.t1}, t2: {self.t2})'
 
   def draw(self, canvas: np.matrix, resolution = 15):
-    resolution += 1
     step = resolution ** -1
     steps = [step * i for i in range(1, resolution)]
-    print(len(steps), steps)
 
     ps = [(np.matrix([t**3, t**2, t, 1]) * h_matrix * self.matrix).tolist() for t in steps]
 
@@ -161,12 +160,30 @@ class Curve:
       l.draw(canvas)
 
 
-def create_graph(name, canvas_size, coordinates, lines):
+def create_graph(name, canvas_size, coordinates, edges, curves, polies):
   canvas = np.zeros(canvas_size)
-  lines = [Line(coordinates[l[0]], coordinates[l[1]]) for l in lines]
+  
+  es = {}
+  for k in edges:
+    e = edges[k]
+    p1 = coordinates[str(e['p1'])]
+    p2 = coordinates[str(e['p2'])]
+    e = Line(p1, p2)
+    es[k] = e
+    e.draw(canvas)
 
-  for l in lines:
-    l.draw(canvas)
+  for c in curves:
+    c = curves[c]
+    p1 = coordinates[str(c['p1'])]
+    p2 = coordinates[str(c['p2'])]
+    t1 = coordinates[str(c['t1'])]
+    t2 = coordinates[str(c['t2'])]
+    res = c['res']
+
+    Curve(p1, p2, t1, t2).draw(canvas, res)
+
+  for p in polies:
+    Geometry([es[str(e)] for e in polies[p]]).draw(canvas)
 
   plt.matshow(canvas)
   plt.savefig(f'plots/{name}.png')
