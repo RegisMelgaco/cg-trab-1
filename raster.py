@@ -1,11 +1,7 @@
-import matplotlib.pyplot as plt
+from PIL import Image
 import numpy as np
 import math
-
-import matplotlib.pyplot as plt
-import numpy as np
-import math
-
+import os
 
 class Coordinate:
   def __init__(self, x, y):
@@ -75,7 +71,7 @@ class Line:
 
     dots = [p1 + (delta * t * -1) for t in self.__t_range(step)]
     for d in dots:
-      canvas[round(d.y)][round(d.x)] = 1
+      canvas[round(d.y)][round(d.x)] = 200
 
     return dots
   
@@ -185,9 +181,11 @@ def create_graph(name, canvas_size, coordinates, edges, curves, polies):
   for p in polies:
     Geometry([es[str(e)] for e in polies[p]]).draw(canvas)
 
-  plt.matshow(canvas)
-  plt.savefig(f'plots/{name}.png')
-
+  if not os.path.exists('plots'):
+    os.makedirs('plots')
+  
+  img = Image.fromarray(canvas.astype(no.uint8))
+  img.save(f'plots/{name}.jpg')           
 
 
 if __name__ == "__main__":
