@@ -128,7 +128,7 @@
 
   <div class="d-flex p-2 overflow-x-auto">
     {#each plots as p}
-      <img alt="plot testinho" src="http://127.0.0.1:8080/static/plots/{p}" />
+      <img alt="plot testinho" src="/static/plots/{p}" />
     {/each}
   </div>
 
