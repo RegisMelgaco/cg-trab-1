@@ -1,7 +1,9 @@
-from PIL import Image
+import matplotlib.pyplot as plt
 import numpy as np
 import math
+from PIL import Image
 import os
+
 
 class Coordinate:
   def __init__(self, x, y):
@@ -62,18 +64,33 @@ class Line:
   def draw(self, canvas: np.matrix):
     p1 = self.p1.to_canvas_coordinate_system(canvas)
     p2 = self.p2.to_canvas_coordinate_system(canvas)
-    delta = p1 + (p2 * -1)
-    line_side = abs(delta.x) if abs(delta.x) > abs(delta.y) else abs(delta.y)
-    if line_side == 0:
-      return
+    
+    delta_x = abs(p1.x - p2.x)
+    delta_y = abs(p1.y - p2.y)
 
-    step = line_side ** -1
+    xs, ys = [], []
 
-    dots = [p1 + (delta * t * -1) for t in self.__t_range(step)]
-    for d in dots:
-      canvas[round(d.y)][round(d.x)] = 200
+    # Horizontal line
+    if delta_x == 0:
+        ys = range(p1.y, p2.y+1) if p1.y < p2.y else range(p1.y, p2.y-1, -1)
+        xs = map(lambda x: p1.x, ys)
+        
+    else:
+        a = (p1.y - p2.y) / (p1.x - p2.x)
+        b = p1.y - a*p1.x
 
-    return dots
+        # |Δx| > |Δy|
+        if delta_x > delta_y:
+            xs = range(p1.x, p2.x+1) if p1.x < p2.x else range(p1.x, p2.x-1, -1)
+            ys = map(lambda x: (x * a) + b, xs)
+
+        # |Δy| >= |Δx|
+        else:
+            ys = range(p1.y, p2.y+1) if p1.y < p2.y else range(p1.y, p2.y-1, -1)
+            xs = map(lambda y: (y-b)/a, ys)
+
+    for p in zip(xs, ys):
+      canvas[round(p[0])][round(p[1])] = 100
   
 class Geometry:
   def __init__(self, lines):
@@ -113,7 +130,7 @@ class Geometry:
 
   def _draw_coordinates(self, canvas: np.ndarray, coordinates):
     for c in coordinates:
-      canvas[c.x][c.y] = 1
+      canvas[c.x][c.y] = 100
 
     return coordinates
   
@@ -183,9 +200,11 @@ def create_graph(name, canvas_size, coordinates, edges, curves, polies):
 
   if not os.path.exists('plots'):
     os.makedirs('plots')
-  
-  img = Image.fromarray(canvas.astype(no.uint8))
-  img.save(f'plots/{name}.jpg')           
+
+  print(canvas)
+  img = Image.fromarray(canvas.astype(np.uint8))
+  img.save(f'plots/{name}.png')
+
 
 
 if __name__ == "__main__":
@@ -196,6 +215,6 @@ if __name__ == "__main__":
     "4": Coordinate(1, 1),
   }
 
-  lines = [["2", "3"], ["1", "4"]]
+  lines = {'1': {'p1': 1, 'p2': 2}}
 
-  create_graph("testinho", (100, 100), coordinates, lines)
+  create_graph("testinho", (100, 100), coordinates, lines, {}, {})
