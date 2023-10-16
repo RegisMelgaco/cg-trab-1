@@ -9,14 +9,15 @@
   let curves = { 1: { p1: 1, p2: 2, t1: 3, t2: 4, res: 15 } };
   let polies = { 1: [1, 2, 3] };
   let plots = [];
-  let plotName = "testinho";
+  let antiAlias = false;
   let verticalRes = 100;
   let horizontalRes = 100;
 
   async function updatePlots() {
-    const resp = await fetch("/plots");
+    const resp = await fetch("http://localhost:8080/plots");
     const body = await resp.json();
-    plots = body.plots;
+
+    plots = body.plots.sort().reverse();
   }
 
   updatePlots();
@@ -102,7 +103,6 @@
     ]);
 
     const body = await JSON.stringify({
-      name: plotName,
       resolution: [verticalRes, horizontalRes],
       coordinates: Object.fromEntries(cs),
       polies,
@@ -110,7 +110,7 @@
       edges,
     });
 
-    await fetch("/raster", {
+    await fetch("http://localhost:8080/raster", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -128,7 +128,7 @@
 
   <div class="d-flex p-2 overflow-x-auto">
     {#each plots as p}
-      <img alt="plot testinho" src="/static/plots/{p}" />
+      <img alt="plot de {p}" src="http://localhost:8080/static/plots/{p}" class="me-4" style="height: 30rem; {antiAlias ? "" : "image-rendering: pixelated"}" />
     {/each}
   </div>
 
@@ -136,15 +136,6 @@
     <h2>Adicionar elementos</h2>
 
     <div class="d-flex mt-4">
-      <div class="me-4">
-        <label for="plot-name" class="form-label">Nome do plot</label>
-        <input
-          bind:value={plotName}
-          type="text"
-          class="form-control"
-          id="plot-name"
-        />
-      </div>
       <div class="me-4">
         <label for="plot-height" class="form-label">Resolução Vertical</label>
         <input
@@ -162,6 +153,10 @@
           class="form-control"
           id="plot-width"
         />
+      </div>
+      <div class="me-4 form-check form-switch">
+        <input bind:value={antiAlias} class="form-check-input" type="checkbox" id="anti-aliasing">
+        <label class="form-check-label" for="anti-aliasing">Anti aliasing</label>
       </div>
     </div>
 
