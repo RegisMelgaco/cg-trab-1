@@ -120,6 +120,8 @@
     });
 
     updatePlots();
+
+    window.scrollTo(0, 0);
   }
 </script>
 
@@ -128,7 +130,12 @@
 
   <div class="d-flex p-2 overflow-x-auto">
     {#each plots as p}
-      <img alt="plot de {p}" src="http://localhost:8080/static/plots/{p}" class="me-4" style="height: 30rem; {antiAlias ? "" : "image-rendering: pixelated"}" />
+      <img
+        alt="plot de {p}"
+        src="http://localhost:8080/static/plots/{p}"
+        class="me-4"
+        style="height: 30rem; {antiAlias ? '' : 'image-rendering: pixelated'}"
+      />
     {/each}
   </div>
 
@@ -145,7 +152,7 @@
           id="plot-height"
         />
       </div>
-      <div>
+      <div class="me-4">
         <label for="plot-width" class="form-label">Resolução Horizontal</label>
         <input
           bind:value={horizontalRes}
@@ -154,10 +161,16 @@
           id="plot-width"
         />
       </div>
-      <div class="me-4 form-check form-switch">
-        <input bind:value={antiAlias} class="form-check-input" type="checkbox" id="anti-aliasing">
-        <label class="form-check-label" for="anti-aliasing">Anti aliasing</label>
+      <div class="d-flex flex-column-reverse">
+        <button
+          on:click={() => {
+            antiAlias = !antiAlias;
+          }}
+          type="button"
+          class="btn btn-primary">Anti Alias</button
+        >
       </div>
+      <div class="me-4 form-check form-switch" />
     </div>
 
     <h3 class="mt-5">Coordenadas</h3>
@@ -176,10 +189,22 @@
           <tr class="text-center">
             <th scope="row">{k}</th>
             <td>
-              <input type="number" class="form-control text-center" placeholder="Definição" aria-label="Definição" bind:value={c.x} >
+              <input
+                type="number"
+                class="form-control text-center"
+                placeholder="Definição"
+                aria-label="Definição"
+                bind:value={c.x}
+              />
             </td>
             <td>
-              <input type="number" class="form-control text-center" placeholder="Definição" aria-label="Definição" bind:value={c.y} >
+              <input
+                type="number"
+                class="form-control text-center"
+                placeholder="Definição"
+                aria-label="Definição"
+                bind:value={c.y}
+              />
             </td>
             <td
               ><button
@@ -246,7 +271,6 @@
       >
     </div>
 
-
     <h3 class="mt-5">Curvas</h3>
 
     <table class="table table-striped table-hover">
@@ -294,7 +318,13 @@
               </select>
             </td>
             <td>
-              <input type="number" class="form-control text-center" placeholder="Definição" aria-label="Definição" bind:value={v.res} >
+              <input
+                type="number"
+                class="form-control text-center"
+                placeholder="Definição"
+                aria-label="Definição"
+                bind:value={v.res}
+              />
             </td>
             <td
               ><button
@@ -313,7 +343,6 @@
         >Adicionar</button
       >
     </div>
-
 
     <h3 class="mt-5">Poligonos</h3>
 
