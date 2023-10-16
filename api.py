@@ -9,7 +9,6 @@ app = Flask(__name__)
 
 @app.route("/raster", methods=['POST'])
 def create_plot():
-    name = request.json['name']
     resolution = request.json['resolution']
     edges = request.json['edges']
     polies = request.json['polies']
@@ -19,9 +18,9 @@ def create_plot():
     for k, c in request.json['coordinates'].items():
         coordinates[k] = raster.Coordinate(c['x'], c['y'])
 
-    raster.create_graph(name, resolution, coordinates, edges, curves, polies)
+    raster.create_graph(resolution, coordinates, edges, curves, polies)
 
-    return {'url': f'/plots/{name}.png'}
+    return {'msg': 'success'}
 
 @app.route("/plots", methods=['GET'])
 def list_plots():

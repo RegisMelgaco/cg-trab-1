@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 import os
+import datetime
 
 
 class Coordinate:
@@ -171,7 +172,7 @@ class Curve:
       l.draw(canvas)
 
 
-def create_graph(name, canvas_size, coordinates, edges, curves, polies):
+def create_graph(canvas_size, coordinates, edges, curves, polies):
   canvas = np.zeros(canvas_size)
   
   es = {}
@@ -201,7 +202,7 @@ def create_graph(name, canvas_size, coordinates, edges, curves, polies):
 
   print(canvas)
   img = Image.fromarray(canvas.astype(np.uint8))
-  img.save(f'plots/{name}.png')
+  img.save(f'plots/{datetime.datetime.now()}.png')
 
 
 
