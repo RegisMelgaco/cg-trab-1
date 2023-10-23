@@ -1,0 +1,27 @@
+@startuml
+
+
+
+database "File System" {
+    [plots]
+}
+
+
+node "Python API" {
+  [API Layer] - [Rasterization Layer]
+  [Rasterization Layer] ---> [File System]
+}
+
+
+node "nginx" {
+  [Web Client] - [Reverse Proxy]
+  [Reverse Proxy] ---> "Python API"
+}
+
+
+actor User
+User ---> [Web Client]
+[Web Client] ---> [File System]
+
+
+@enduml
