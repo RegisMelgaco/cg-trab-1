@@ -99,7 +99,7 @@
   async function createPlot() {
     const cs = Object.entries(coordinates).map(([k, v]) => [
       k,
-      { x: parseInt(v.x), y: parseInt(v.y) },
+      { x: parseFloat(v.x), y: parseFloat(v.y) },
     ]);
 
     const body = await JSON.stringify({

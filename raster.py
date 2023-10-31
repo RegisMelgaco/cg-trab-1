@@ -50,16 +50,6 @@ class Line:
   def __str__(self):
     return f'[{self.p1}, {self.p2}]'
 
-  def __t_range(self, step):
-    t = 0
-    while t < 1:
-      yield t
-      t += step
-
-  def dim_length(self, canvas):
-    delta = (self.p1 + (self.p2 * -1))
-    return abs(delta.x) if abs(delta.x) > abs(delta.y) else abs(delta.y)
-
   def draw(self, canvas: np.matrix):
     p1 = self.p1.to_canvas_coordinate_system(canvas)
     p2 = self.p2.to_canvas_coordinate_system(canvas)
@@ -69,7 +59,7 @@ class Line:
 
     xs, ys = [], []
 
-    # Horizontal line
+    # Vertical line
     if delta_x == 0:
         ys = range(p1.y, p2.y+1) if p1.y < p2.y else range(p1.y, p2.y-1, -1)
         xs = map(lambda x: p1.x, ys)
@@ -89,7 +79,7 @@ class Line:
             xs = map(lambda y: (y-b)/a, ys)
 
     for p in zip(xs, ys):
-      canvas[round(p[0])][round(p[1])] = 100
+      canvas[round(p[0])][round(p[1])] = 200
   
 class Geometry:
   def __init__(self, lines):
@@ -129,7 +119,7 @@ class Geometry:
 
   def _draw_coordinates(self, canvas: np.ndarray, coordinates):
     for c in coordinates:
-      canvas[c.x][c.y] = 100
+      canvas[c.x][c.y] = 200
 
     return coordinates
   
