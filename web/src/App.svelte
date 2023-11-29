@@ -14,7 +14,7 @@
   let horizontalRes = 100;
 
   async function updatePlots() {
-    const resp = await fetch("http://localhost:8080/plots");
+    const resp = await fetch("/plots");
     const body = await resp.json();
 
     plots = body.plots.sort().reverse();
@@ -110,7 +110,7 @@
       edges,
     });
 
-    await fetch("http://localhost:8080/raster", {
+    await fetch("/raster", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -132,7 +132,7 @@
     {#each plots as p}
       <img
         alt="plot de {p}"
-        src="http://localhost:8080/static/plots/{p}"
+        src="/static/plots/{p}"
         class="me-4"
         style="height: 30rem; {antiAlias ? '' : 'image-rendering: pixelated'}"
       />
@@ -167,7 +167,7 @@
             antiAlias = !antiAlias;
           }}
           type="button"
-          class="btn btn-primary">Anti Alias</button
+          class="btn btn-primary">{antiAlias ? "Desabilitar Anti Alias" : "Ativar Anti Alias"}</button
         >
       </div>
       <div class="me-4 form-check form-switch" />
